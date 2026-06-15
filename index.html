@@ -261,12 +261,14 @@
   <div class="doc" id="doc"></div>
   <div class="modbtns">
     <button class="btn ghost" onclick="cerrarDoc()">Cerrar</button>
-    <button class="btn primary" onclick="window.print()">Guardar / Imprimir PDF</button>
+    <button class="btn wa" onclick="compartirDoc()">📲 Compartir / Enviar</button>
+    <button class="btn primary" onclick="window.print()">PDF</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
   // === CONFIG: link a tu PDF de garantía de cerámico (cámbialo cuando lo subas) ===
   var GARANTIA_CERAMICO_URL = ''; // ej: 'https://mackeyze-777.github.io/vam-garage-recepcion/garantia-ceramico.pdf'
@@ -357,6 +359,26 @@
     return '<div class="sec">Fotos</div><div class="dphotos">'+photos.map(function(u){return '<img src="'+u+'">'}).join('')+'</div>';
   }
   function cerrarDoc(){$('scrim').classList.remove('on');$('modal').classList.remove('on')}
+
+  // ===== Compartir el documento como imagen (vía menú nativo → WhatsApp) =====
+  function compartirDoc(){
+    if(typeof html2canvas==='undefined'){toast('Cargando… intenta de nuevo en 2 seg');return;}
+    toast('Preparando imagen…');
+    html2canvas($('doc'),{scale:2,backgroundColor:'#ffffff',useCORS:true}).then(function(canvas){
+      canvas.toBlob(function(blob){
+        if(!blob){toast('No se pudo generar la imagen');return;}
+        var file=new File([blob],'VAM-Garage.png',{type:'image/png'});
+        if(navigator.canShare && navigator.canShare({files:[file]})){
+          navigator.share({files:[file],title:'VAM Garage'}).catch(function(){});
+        }else{
+          // Fallback: descargar la imagen para adjuntarla a mano
+          var a=document.createElement('a');
+          a.href=URL.createObjectURL(blob);a.download='VAM-Garage.png';a.click();
+          toast('Imagen guardada — adjúntala en WhatsApp');
+        }
+      },'image/png');
+    }).catch(function(){toast('Error al generar la imagen')});
+  }
 
   // ===== Mensaje de recibimiento (al recibir el carro) =====
   function msgRecibimiento(){
