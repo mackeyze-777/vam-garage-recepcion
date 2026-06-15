@@ -178,9 +178,11 @@
     </div>
     <p class="hint">Toma fotos de todo el vehículo y de los daños. Quedan solo en este celular para que las mandes; no se guardan en ningún servidor.</p>
 
-    <button class="btn primary" onclick="generar('rec')">📄 Generar Hoja de Recepción</button>
-    <button class="btn wa" onclick="compartirFotos('rec')">📷 Enviar fotos al cliente (en grande)</button>
-    <button class="btn wa" onclick="msgRecibimiento()">💬 Mensaje de recibimiento (WhatsApp)</button>
+    <p class="hint">Orden sugerido: <b>1)</b> Generar y compartir la hoja · <b>2)</b> Enviar las fotos · <b>3)</b> Enviar el mensaje de recepción.</p>
+    <button class="btn primary" onclick="generar('rec')">📄 1. Generar Hoja de Recepción</button>
+    <button class="btn wa" onclick="compartirFotos('rec')">📷 2. Enviar fotos al cliente (en grande)</button>
+    <button class="btn wa" onclick="msgRecepcion()">💬 3. Enviar mensaje de recepción</button>
+    <button class="btn wa" onclick="msgRecibimiento()">🚗 Mensaje de "ya recibimos tu vehículo"</button>
     <button class="btn ghost" onclick="limpiar('rec')">Limpiar formulario</button>
   </section>
 
@@ -278,6 +280,11 @@
   var GARANTIA_CERAMICO_URL = ''; // ej: 'https://mackeyze-777.github.io/vam-garage-recepcion/garantia-ceramico.pdf'
 
   var PHOTOS={rec:[],ent:[]};
+  var MSG_RECEPCION='Hola, qué tal. 👋\n\n'+
+    'Te comparto la hoja de recepción junto con las fotografías que tomamos al momento de recibir tu vehículo. 🚗\n\n'+
+    'Toda esta información forma parte de nuestro proceso de recepción y nos permite dejar documentado el estado en el que ingresó la unidad, así como los servicios acordados antes de comenzar el trabajo. Esto nos ayuda a brindar mayor transparencia y seguridad durante todo el proceso.\n\n'+
+    'Te pido que, si tienes alguna duda o notas algún dato que debamos corregir, me lo hagas saber antes de iniciar el servicio.\n\n'+
+    '¡Muchas gracias por la confianza! ✨';
   function $(id){return document.getElementById(id)}
   function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('on')},2600)}
   function phone(t){var n=String(t||'').replace(/\D/g,'');if(n.length===10)n='52'+n;return n;}
@@ -402,6 +409,11 @@
     m+='Te confirmo que ya recibimos tu vehículo'+(veh?' ('+veh+')':'')+' en *VAM Garage* y en un momento comenzamos con el servicio acordado. 🚗✨\n\n';
     m+='Durante el proceso te mantendremos al tanto de cualquier detalle. ¡Gracias por tu confianza! 🙌';
     window.open(wa(tel,m),'_blank');
+  }
+  // Mensaje de recepción (se manda DESPUÉS de la hoja y las fotos)
+  function msgRecepcion(){
+    var tel=$('r-tel').value; if(!tel){toast('Falta el teléfono del cliente');return;}
+    window.open(wa(tel,MSG_RECEPCION),'_blank');
   }
 
   // ===== Garantía / cierre en entrega =====
