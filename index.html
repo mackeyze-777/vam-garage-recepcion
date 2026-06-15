@@ -27,8 +27,8 @@
   .brand .logo{height:32px;width:auto}
   .brand small{font-weight:600;color:var(--muted);font-size:10px;letter-spacing:2.5px}
   .tabs{display:flex;gap:8px;margin-top:12px}
-  .tab{flex:1;text-align:center;padding:11px;border-radius:11px;border:1px solid var(--line);
-    background:var(--panel2);color:var(--muted);font-weight:700;font-size:14px;cursor:pointer}
+  .tab{flex:1;text-align:center;padding:11px 6px;border-radius:11px;border:1px solid var(--line);
+    background:var(--panel2);color:var(--muted);font-weight:700;font-size:13px;cursor:pointer}
   .tab.on{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
   main{max-width:600px;margin:0 auto;padding:18px}
   .page{display:none} .page.on{display:block}
@@ -82,6 +82,30 @@
   .modbtns button{flex:1}
   @media print{ body *{visibility:hidden} .modal,.modal *{visibility:visible}
     .modal{position:absolute;inset:0;padding:0} .modbtns{display:none} .doc{margin:0;border-radius:0} }
+  /* ítems de garantía */
+  .gitem{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line);
+    border-radius:11px;padding:11px 13px;margin-top:8px}
+  .gitem .gck{flex:1;display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;color:var(--txt);cursor:pointer;margin:0}
+  .gitem .gck input{width:20px;height:20px;accent-color:var(--accent)}
+  .gitem select{width:auto;min-width:96px;padding:9px 10px;font-size:14px}
+  /* certificado */
+  .cert{font-family:Georgia,"Times New Roman",serif;color:#1a1a1a;background:#fff}
+  .cert .bar{background:#111;height:42px}
+  .cert .ct{text-align:center;padding:20px 18px 4px}
+  .cert .ct h1{font-size:23px;letter-spacing:5px;margin:0;font-weight:600}
+  .cert .ct .sub{letter-spacing:3px;font-size:11px;color:#555;margin-top:5px}
+  .cert hr{border:0;border-top:1px solid #ccc;margin:12px 22px}
+  .cert .body{padding:4px 24px 14px;font-size:12.5px;line-height:1.5}
+  .cert .emis{text-align:right;font-size:12px;color:#333;margin-bottom:4px}
+  .cert .org{font-weight:700;margin:4px 0 10px;font-size:14px}
+  .cert .cols{display:flex;gap:16px;margin:10px 0}
+  .cert .cols>div{flex:1}
+  .cert h4{margin:13px 0 3px;font-size:13px}
+  .cert ul{margin:3px 0;padding-left:18px}
+  .cert ul li{margin:2px 0}
+  .cert .footbar{background:#111;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:11px 22px}
+  .cert .footbar img{height:24px}
+  .cert .footbar span{font-size:12px}
   .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#fff;color:#111;
     padding:12px 18px;border-radius:11px;font-weight:600;font-size:14px;z-index:60;opacity:0;
     transition:opacity .25s;box-shadow:0 8px 24px rgba(0,0,0,.4);pointer-events:none;max-width:90%}
@@ -94,6 +118,7 @@
   <div class="tabs">
     <div class="tab on" id="tab-rec" onclick="showPage('rec')">🚗 Recepción</div>
     <div class="tab" id="tab-ent" onclick="showPage('ent')">✅ Entrega</div>
+    <div class="tab" id="tab-gar" onclick="showPage('gar')">🛡️ Garantía</div>
   </div>
 </header>
 
@@ -189,6 +214,45 @@
     <button class="btn wa" id="btn-garantia" onclick="enviarGarantia()">🛡️ Enviar garantía / cierre (WhatsApp)</button>
     <button class="btn ghost" onclick="limpiar('ent')">Limpiar formulario</button>
   </section>
+
+  <!-- ================= GARANTÍA (certificado cerámico) ================= -->
+  <section class="page" id="page-gar">
+    <h2>Datos del certificado</h2>
+    <div class="two">
+      <div><label>Folio</label><input id="g-folio" inputmode="numeric" placeholder="26"></div>
+      <div><label>Fecha de instalación</label><input id="g-fecha" type="date"></div>
+    </div>
+    <label>Vehículo</label><input id="g-veh" placeholder="Audi TT">
+    <div class="two">
+      <div><label>Placas (opcional)</label><input id="g-placas" placeholder="HKP-528-E"></div>
+      <div><label>Teléfono (para enviar)</label><input id="g-tel" type="tel" inputmode="tel" placeholder="771 802 1389"></div>
+    </div>
+
+    <h2>¿Qué cerámicos se aplicaron?</h2>
+    <div class="gitem">
+      <label class="gck"><input type="checkbox" id="g-pintura" checked> Pintura</label>
+      <select id="g-pintura-y"><option value="1">1 año</option><option value="2">2 años</option><option value="3" selected>3 años</option><option value="5">5 años</option></select>
+    </div>
+    <div class="gitem">
+      <label class="gck"><input type="checkbox" id="g-vestiduras"> Vestiduras</label>
+      <select id="g-vestiduras-y"><option value="1">1 año</option><option value="2">2 años</option><option value="3">3 años</option><option value="5">5 años</option></select>
+    </div>
+    <div class="gitem">
+      <label class="gck"><input type="checkbox" id="g-rines"> Rines</label>
+      <select id="g-rines-y"><option value="1">1 año</option><option value="2">2 años</option><option value="3">3 años</option><option value="5">5 años</option></select>
+    </div>
+    <div class="gitem">
+      <label class="gck"><input type="checkbox" id="g-cristales"> Cristales</label>
+      <select id="g-cristales-y"><option value="1">1 año</option><option value="2">2 años</option><option value="3">3 años</option><option value="5">5 años</option></select>
+    </div>
+
+    <label>Duración de la protección (texto principal)</label>
+    <select id="g-dur"><option value="1">hasta 1 año</option><option value="2">hasta 2 años</option><option value="3" selected>hasta 3 años</option><option value="5">hasta 5 años</option></select>
+
+    <button class="btn primary" onclick="generarCert()">📄 Generar certificado</button>
+    <button class="btn wa" onclick="msgGarantia()">💬 Avisar por WhatsApp</button>
+    <p class="hint">Genera el certificado → "Guardar / Imprimir PDF" → mándalo por WhatsApp adjuntando el PDF. El folio se sugiere solo y sube de uno en uno.</p>
+  </section>
 </main>
 
 <!-- Hoja generada -->
@@ -215,10 +279,10 @@
   function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 
   function showPage(p){
-    $('page-rec').classList.toggle('on',p==='rec');
-    $('page-ent').classList.toggle('on',p==='ent');
-    $('tab-rec').classList.toggle('on',p==='rec');
-    $('tab-ent').classList.toggle('on',p==='ent');
+    ['rec','ent','gar'].forEach(function(x){
+      $('page-'+x).classList.toggle('on',x===p);
+      $('tab-'+x).classList.toggle('on',x===p);
+    });
     window.scrollTo(0,0);
   }
 
@@ -328,6 +392,83 @@
     window.open(wa(tel,m),'_blank');
   }
 
+  // ===== GARANTÍA: certificado de cerámico =====
+  function initGarantia(){
+    var hoy=new Date().toISOString().slice(0,10);
+    if(!$('g-fecha').value) $('g-fecha').value=hoy;
+    var next=localStorage.getItem('vam_next_folio');
+    if(next && !$('g-folio').value) $('g-folio').value=next;
+  }
+  function yTxt(y){return y==1?'1 año':y+' años';}
+  function fechaDMY(iso){if(!iso)return '';var p=iso.split('-');return (+p[2])+'/'+(+p[1])+'/'+p[0];}
+  function productosArr(){
+    var a=[];
+    if($('g-pintura').checked)    a.push('Cerámico de pintura de '+yTxt($('g-pintura-y').value));
+    if($('g-vestiduras').checked) a.push('Cerámico en vestiduras de '+yTxt($('g-vestiduras-y').value));
+    if($('g-rines').checked)      a.push('Cerámico de '+yTxt($('g-rines-y').value)+' en rines');
+    if($('g-cristales').checked)  a.push('Cerámico en cristales de '+yTxt($('g-cristales-y').value));
+    return a;
+  }
+  function generarCert(){
+    var prods=productosArr();
+    if(!prods.length){toast('Marca al menos un cerámico aplicado');return;}
+    var emis=fechaDMY(new Date().toISOString().slice(0,10));
+    var inst=fechaDMY($('g-fecha').value);
+    var dur=yTxt($('g-dur').value);
+    var placas=$('g-placas').value.trim();
+    var html=
+    '<div class="cert">'+
+      '<div class="bar"></div>'+
+      '<div class="ct"><h1>CERTIFICADO DE GARANTÍA</h1><div class="sub">CERAMIC COATING PROTECTION</div></div>'+
+      '<hr>'+
+      '<div class="body">'+
+        '<div class="emis">Fecha de emisión: '+emis+'</div>'+
+        '<div class="org">DLT Studio &amp; VAM Garage</div>'+
+        'Certificado de garantía del servicio de recubrimiento cerámico aplicado al siguiente vehículo:'+
+        '<div class="cols">'+
+          '<div>'+
+            '<b>Vehículo:</b> '+esc($('g-veh').value)+'<br>'+
+            '<b>Folio:</b> '+esc($('g-folio').value)+'<br>'+
+            '<b>Fecha de instalación:</b> '+inst+
+          '</div>'+
+          '<div>'+
+            (placas?'<b>Número de placas:</b> '+esc(placas)+'<br>':'')+
+            '<b>Producto aplicado:</b> '+esc(prods.join(', '))+
+          '</div>'+
+        '</div>'+
+        '<h4>Duración de la protección:</h4>'+
+        'El recubrimiento cerámico aplicado ofrece una protección aproximada de '+dur+', dependiendo del uso del vehículo, hábitos de manejo, condiciones ambientales y mantenimiento realizado.'+
+        '<h4>Cobertura:</h4><ul>'+
+          '<li>Defectos derivados de la aplicación del producto.</li>'+
+          '<li>Pérdida prematura de propiedades del recubrimiento causada por fallas en la instalación.</li></ul>'+
+        '<h4>Exclusiones:</h4><ul>'+
+          '<li>Rayones, golpes o daños físicos.</li>'+
+          '<li>Uso de químicos agresivos o procesos de lavado inadecuados.</li>'+
+          '<li>Falta de mantenimiento recomendado.</li>'+
+          '<li>Contaminación ambiental severa: Sarro, Resina de árboles, Excremento de aves, Contaminantes químicos.</li></ul>'+
+        '<h4>Mantenimiento requerido:</h4>'+
+        'Para conservar las propiedades y duración del recubrimiento, se recomienda realizar mantenimientos periódicos cada 3 a 4 meses en DLT Studio.<br><br>'+
+        'En caso de cualquier duda, inspección o revisión, nuestro equipo podrá evaluar el estado del vehículo directamente en nuestras instalaciones.<br><br>'+
+        'Agradecemos su confianza en DLT Studio &amp; VAM Garage.'+
+      '</div>'+
+      '<div class="footbar"><img src="logo.png" alt="VAM"><span>DLT Studio | Pachuca, Hidalgo</span></div>'+
+    '</div>';
+    $('doc').innerHTML=html;
+    $('scrim').classList.add('on');$('modal').classList.add('on');window.scrollTo(0,0);
+    // subir folio para el siguiente
+    var f=parseInt($('g-folio').value,10);
+    if(!isNaN(f)) localStorage.setItem('vam_next_folio', String(f+1));
+  }
+  function msgGarantia(){
+    var tel=$('g-tel').value; if(!tel){toast('Falta el teléfono');return;}
+    var veh=$('g-veh').value;
+    var m='Hola 👋 ¡Gracias por confiar en *VAM Garage*! 🛡️✨\n\n';
+    m+='Te comparto el *Certificado de Garantía* del recubrimiento cerámico aplicado a tu vehículo'+(veh?' ('+veh+')':'')+'.\n\n';
+    m+='📌 Recuerda dar mantenimiento cada 3 a 4 meses para conservar la protección. Guarda este certificado para cualquier revisión.\n\n';
+    m+='Cualquier duda, aquí estamos. 🙌';
+    window.open(wa(tel,m),'_blank');
+  }
+
   function limpiar(side){
     var pref=side==='rec'?'r-':'e-';
     document.querySelectorAll('#page-'+side+' input, #page-'+side+' textarea').forEach(function(i){i.value=''});
@@ -336,6 +477,8 @@
     PHOTOS[side]=[];renderPhotos(side);
     toast('Formulario limpio');
   }
+
+  initGarantia();
 </script>
 </body>
 </html>
