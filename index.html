@@ -178,9 +178,11 @@
     </div>
     <p class="hint">Toma fotos de todo el vehículo y de los daños. Quedan solo en este celular para que las mandes; no se guardan en ningún servidor.</p>
 
-    <p class="hint">Llena los datos y agrega las fotos. Con un solo toque se manda al cliente la hoja, las fotos y el mensaje.</p>
-    <button class="btn primary" onclick="enviarTodo('rec')">📲 Enviar recepción al cliente</button>
-    <button class="btn ghost" onclick="generar('rec')">👁️ Ver hoja / Imprimir PDF</button>
+    <p class="hint">Llena los datos y agrega las fotos. "Enviar" manda la hoja + el mensaje; "Fotos" manda las fotos en grande.</p>
+    <div class="two">
+      <button class="btn primary" onclick="enviarTodo('rec')">📲 Enviar recepción</button>
+      <button class="btn wa" onclick="compartirFotos('rec')">📷 Fotos</button>
+    </div>
     <button class="btn ghost" onclick="limpiar('rec')">Limpiar formulario</button>
   </section>
 
@@ -213,10 +215,12 @@
       🛡️ <b>Servicio con Cerámico:</b> al entregar se enviará la <b>garantía de cerámico</b> + cuidados.
     </div>
 
-    <p class="hint">Con un toque se manda al cliente la hoja de entrega y las fotos del resultado.</p>
-    <button class="btn primary" onclick="enviarTodo('ent')">📲 Enviar entrega al cliente</button>
+    <p class="hint">"Enviar" manda la hoja de entrega; "Fotos" manda las fotos del resultado en grande.</p>
+    <div class="two">
+      <button class="btn primary" onclick="enviarTodo('ent')">📲 Enviar entrega</button>
+      <button class="btn wa" onclick="compartirFotos('ent')">📷 Fotos</button>
+    </div>
     <button class="btn wa" id="btn-garantia" onclick="enviarGarantia()">🛡️ Enviar garantía / cierre (WhatsApp)</button>
-    <button class="btn ghost" onclick="generar('ent')">👁️ Ver hoja / Imprimir PDF</button>
     <button class="btn ghost" onclick="limpiar('ent')">Limpiar formulario</button>
   </section>
 
@@ -387,7 +391,6 @@
       canvas.toBlob(function(blob){
         r.innerHTML='';
         var files=[new File([blob],(side==='rec'?'Hoja-Recepcion':'Hoja-Entrega')+'.png',{type:'image/png'})];
-        PHOTOS[side].forEach(function(p){files.push(p.file)});
         var data={files:files,title:'VAM Garage'};
         if(side==='rec') data.text=MSG_RECEPCION;
         if(navigator.canShare && navigator.canShare({files:files})){
