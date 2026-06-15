@@ -144,6 +144,8 @@
       <option>Pulido + Encerado</option><option>Pulido 2 pasos</option>
       <option>Pulido + Ceramico</option><option>Otro</option>
     </select>
+    <label>Servicios extra / agregados</label>
+    <input id="r-extra" placeholder="Ej. hidratado de piel, descontaminado, grabado de cristales…">
 
     <h2>Nivel de gasolina</h2>
     <div class="fuel" id="r-fuel">
@@ -177,6 +179,7 @@
     <p class="hint">Toma fotos de todo el vehículo y de los daños. Quedan solo en este celular para que las mandes; no se guardan en ningún servidor.</p>
 
     <button class="btn primary" onclick="generar('rec')">📄 Generar Hoja de Recepción</button>
+    <button class="btn wa" onclick="compartirFotos('rec')">📷 Enviar fotos al cliente (en grande)</button>
     <button class="btn wa" onclick="msgRecibimiento()">💬 Mensaje de recibimiento (WhatsApp)</button>
     <button class="btn ghost" onclick="limpiar('rec')">Limpiar formulario</button>
   </section>
@@ -211,6 +214,7 @@
     </div>
 
     <button class="btn primary" onclick="generar('ent')">📄 Generar Hoja de Entrega</button>
+    <button class="btn wa" onclick="compartirFotos('ent')">📷 Enviar fotos del resultado (en grande)</button>
     <button class="btn wa" id="btn-garantia" onclick="enviarGarantia()">🛡️ Enviar garantía / cierre (WhatsApp)</button>
     <button class="btn ghost" onclick="limpiar('ent')">Limpiar formulario</button>
   </section>
@@ -301,8 +305,7 @@
   function addPhotos(side,input){
     var files=input.files; if(!files)return;
     for(var i=0;i<files.length;i++){(function(file){
-      var url=URL.createObjectURL(file);
-      PHOTOS[side].push(url);
+      PHOTOS[side].push({url:URL.createObjectURL(file), file:file});
     })(files[i]);}
     input.value='';
     renderPhotos(side);
@@ -312,11 +315,22 @@
     var cont=$( side==='rec'?'r-photos':'e-photos');
     var add=cont.querySelector('.addph');
     cont.querySelectorAll('.ph').forEach(function(e){e.remove()});
-    PHOTOS[side].forEach(function(url,i){
+    PHOTOS[side].forEach(function(p,i){
       var d=document.createElement('div');d.className='ph';
-      d.innerHTML='<img src="'+url+'"><button class="del" onclick="delPhoto(\''+side+'\','+i+')">✕</button>';
+      d.innerHTML='<img src="'+p.url+'"><button class="del" onclick="delPhoto(\''+side+'\','+i+')">✕</button>';
       cont.insertBefore(d,add);
     });
+  }
+  // Enviar las fotos en grande, separadas, vía menú nativo → WhatsApp
+  function compartirFotos(side){
+    var arr=PHOTOS[side];
+    if(!arr.length){toast('No hay fotos que enviar');return;}
+    var files=arr.map(function(p){return p.file;});
+    if(navigator.canShare && navigator.canShare({files:files})){
+      navigator.share({files:files,title:'Fotos del vehículo · VAM Garage'}).catch(function(){});
+    }else{
+      toast('Tu celular no permite enviarlas juntas; mándalas desde la galería');
+    }
   }
 
   function fuelVal(){var f=document.querySelector('#r-fuel .f.on');return f?f.getAttribute('data-v'):'';}
@@ -335,12 +349,12 @@
         row('Cliente',$('r-nombre').value)+row('Teléfono',$('r-tel').value)+
         row('Vehículo',$('r-veh').value)+row('Color',$('r-color').value)+
         row('Placas',$('r-placas').value)+row('Kilometraje',$('r-km').value)+
-        row('Servicio',$('r-servicio').value)+row('Gasolina',fuelVal())+
-        row('Objetos/pertenencias',$('r-objetos').value)+
+        row('Servicio',$('r-servicio').value)+row('Servicios extra',$('r-extra').value)+
+        row('Gasolina',fuelVal())+row('Objetos/pertenencias',$('r-objetos').value)+
         (danos?'<div class="sec">Estado / daños detectados</div><div class="note">'+esc(danos)+'</div>':'')+
         ($('r-obs').value?'<div class="sec">Observaciones</div><div class="note">'+esc($('r-obs').value)+'</div>':'')+
         photosHTML(photos)+
-        '</div><div class="foot">Firma de conformidad del cliente: ____________________<br>VAM Garage · 771 802 1389</div>';
+        '</div><div class="foot">VAM Garage · 771 802 1389</div>';
     } else {
       html='<div class="dhead"><b>HOJA DE ENTREGA</b><span>VAM GARAGE</span></div><div class="dbody">'+
         '<div class="row"><span>Fecha y hora</span><b>'+fecha()+'</b></div>'+
@@ -356,7 +370,7 @@
   }
   function photosHTML(photos){
     if(!photos.length)return '';
-    return '<div class="sec">Fotos</div><div class="dphotos">'+photos.map(function(u){return '<img src="'+u+'">'}).join('')+'</div>';
+    return '<div class="sec">Fotos</div><div class="dphotos">'+photos.map(function(p){return '<img src="'+p.url+'">'}).join('')+'</div>';
   }
   function cerrarDoc(){$('scrim').classList.remove('on');$('modal').classList.remove('on')}
 
