@@ -178,11 +178,9 @@
     </div>
     <p class="hint">Toma fotos de todo el vehículo y de los daños. Quedan solo en este celular para que las mandes; no se guardan en ningún servidor.</p>
 
-    <p class="hint">Orden sugerido: <b>1)</b> Generar y compartir la hoja · <b>2)</b> Enviar las fotos · <b>3)</b> Enviar el mensaje de recepción.</p>
-    <button class="btn primary" onclick="generar('rec')">📄 1. Generar Hoja de Recepción</button>
-    <button class="btn wa" onclick="compartirFotos('rec')">📷 2. Enviar fotos al cliente (en grande)</button>
-    <button class="btn wa" onclick="msgRecepcion()">💬 3. Enviar mensaje de recepción</button>
-    <button class="btn wa" onclick="msgRecibimiento()">🚗 Mensaje de "ya recibimos tu vehículo"</button>
+    <p class="hint">Llena los datos y agrega las fotos. Con un solo toque se manda al cliente la hoja, las fotos y el mensaje.</p>
+    <button class="btn primary" onclick="enviarTodo('rec')">📲 Enviar recepción al cliente</button>
+    <button class="btn ghost" onclick="generar('rec')">👁️ Ver hoja / Imprimir PDF</button>
     <button class="btn ghost" onclick="limpiar('rec')">Limpiar formulario</button>
   </section>
 
@@ -215,9 +213,10 @@
       🛡️ <b>Servicio con Cerámico:</b> al entregar se enviará la <b>garantía de cerámico</b> + cuidados.
     </div>
 
-    <button class="btn primary" onclick="generar('ent')">📄 Generar Hoja de Entrega</button>
-    <button class="btn wa" onclick="compartirFotos('ent')">📷 Enviar fotos del resultado (en grande)</button>
+    <p class="hint">Con un toque se manda al cliente la hoja de entrega y las fotos del resultado.</p>
+    <button class="btn primary" onclick="enviarTodo('ent')">📲 Enviar entrega al cliente</button>
     <button class="btn wa" id="btn-garantia" onclick="enviarGarantia()">🛡️ Enviar garantía / cierre (WhatsApp)</button>
+    <button class="btn ghost" onclick="generar('ent')">👁️ Ver hoja / Imprimir PDF</button>
     <button class="btn ghost" onclick="limpiar('ent')">Limpiar formulario</button>
   </section>
 
@@ -272,6 +271,7 @@
   </div>
 </div>
 
+<div id="render" style="position:fixed;left:-10000px;top:0;width:560px"></div>
 <div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -347,11 +347,11 @@
   function fecha(){var d=new Date();return d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear()+' '+d.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});}
   function row(l,v){if(!v)return '';return '<div class="row"><span>'+esc(l)+'</span><b>'+esc(v)+'</b></div>';}
 
-  function generar(side){
-    var html,photos=PHOTOS[side];
+  function buildDocHTML(side){
+    var photos=PHOTOS[side];
     if(side==='rec'){
       var danos=danosVals().join(', ');
-      html='<div class="dhead"><b>HOJA DE RECEPCIÓN</b><span>VAM GARAGE</span></div><div class="dbody">'+
+      return '<div class="dhead"><b>HOJA DE RECEPCIÓN</b><span>VAM GARAGE</span></div><div class="dbody">'+
         '<div class="row"><span>Fecha y hora</span><b>'+fecha()+'</b></div>'+
         row('Cliente',$('r-nombre').value)+row('Teléfono',$('r-tel').value)+
         row('Vehículo',$('r-veh').value)+row('Color',$('r-color').value)+
@@ -363,17 +363,40 @@
         photosHTML(photos)+
         '</div><div class="foot">VAM Garage · 771 802 1389</div>';
     } else {
-      html='<div class="dhead"><b>HOJA DE ENTREGA</b><span>VAM GARAGE</span></div><div class="dbody">'+
+      return '<div class="dhead"><b>HOJA DE ENTREGA</b><span>VAM GARAGE</span></div><div class="dbody">'+
         '<div class="row"><span>Fecha y hora</span><b>'+fecha()+'</b></div>'+
         row('Cliente',$('e-nombre').value)+row('Teléfono',$('e-tel').value)+
         row('Vehículo',$('e-veh').value)+row('Color',$('e-color').value)+
         row('Servicio realizado',$('e-servicio').value)+
         ($('e-obs').value?'<div class="sec">Resultado / trabajos</div><div class="note">'+esc($('e-obs').value)+'</div>':'')+
         photosHTML(photos)+
-        '</div><div class="foot">Vehículo entregado a conformidad. Firma: ____________________<br>VAM Garage · 771 802 1389</div>';
+        '</div><div class="foot">VAM Garage · 771 802 1389</div>';
     }
-    $('doc').innerHTML=html;
+  }
+  function generar(side){
+    $('doc').innerHTML=buildDocHTML(side);
     $('scrim').classList.add('on');$('modal').classList.add('on');window.scrollTo(0,0);
+  }
+  // ===== UN SOLO TOQUE: manda hoja + fotos + mensaje juntos =====
+  function enviarTodo(side){
+    if(typeof html2canvas==='undefined'){toast('Cargando… intenta de nuevo en 2 seg');return;}
+    toast('Preparando envío…');
+    var r=$('render');
+    r.innerHTML='<div class="doc">'+buildDocHTML(side)+'</div>';
+    html2canvas(r.firstChild,{scale:2,backgroundColor:'#ffffff',useCORS:true}).then(function(canvas){
+      canvas.toBlob(function(blob){
+        r.innerHTML='';
+        var files=[new File([blob],(side==='rec'?'Hoja-Recepcion':'Hoja-Entrega')+'.png',{type:'image/png'})];
+        PHOTOS[side].forEach(function(p){files.push(p.file)});
+        var data={files:files,title:'VAM Garage'};
+        if(side==='rec') data.text=MSG_RECEPCION;
+        if(navigator.canShare && navigator.canShare({files:files})){
+          navigator.share(data).catch(function(){});
+        }else{
+          toast('Tu celular no permite enviarlo junto; usa "Ver hoja" y compártela');
+        }
+      },'image/png');
+    }).catch(function(){r.innerHTML='';toast('Error al preparar el envío')});
   }
   function photosHTML(photos){
     if(!photos.length)return '';
