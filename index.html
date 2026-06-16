@@ -187,9 +187,8 @@
 
   <!-- ================= ENTREGA ================= -->
   <section class="page" id="page-ent">
-    <h2>Datos del cliente</h2>
+    <h2>Datos</h2>
     <label>Nombre del cliente</label><input id="e-nombre" placeholder="Juan García">
-    <label>Teléfono (WhatsApp)</label><input id="e-tel" type="tel" inputmode="tel" placeholder="771 802 1389">
     <div class="two">
       <div><label>Vehículo / Modelo</label><input id="e-veh" placeholder="Audi A3"></div>
       <div><label>Color</label><input id="e-color" placeholder="Azul"></div>
@@ -211,15 +210,14 @@
     </div>
 
     <div class="warn" id="garantia-ceramico" style="display:none">
-      🛡️ <b>Servicio con Cerámico:</b> al entregar se enviará la <b>garantía de cerámico</b> + cuidados.
+      🛡️ Servicio con <b>Cerámico</b>: genera y envía el certificado de garantía en la pestaña <b>🛡️ Garantía</b>.
     </div>
 
-    <p class="hint">"Enviar" manda la hoja de entrega; "Fotos" manda las fotos del resultado en grande.</p>
+    <p class="hint">"Enviar entrega" manda la hoja + mensaje de cierre; "Fotos" manda las fotos del resultado en grande.</p>
     <div class="two">
       <button class="btn primary" onclick="enviarTodo('ent')">📲 Enviar entrega</button>
       <button class="btn wa" onclick="compartirFotos('ent')">📷 Fotos</button>
     </div>
-    <button class="btn wa" id="btn-garantia" onclick="enviarGarantia()">🛡️ Enviar garantía / cierre (WhatsApp)</button>
     <button class="btn ghost" onclick="limpiar('ent')">Limpiar formulario</button>
   </section>
 
@@ -287,6 +285,9 @@
     'Te comparto la *hoja de recepción* y las *fotografías* de tu vehículo al momento de ingresar al taller. 🚗\n\n'+
     'Por favor revísalas y, si notas algún dato incorrecto o tienes alguna duda, házmelo saber antes de comenzar el servicio.\n\n'+
     '¡Muchas gracias por la confianza! ✨';
+  var MSG_ENTREGA='Hola 👋 ¡Tu vehículo ya está listo! ✨🚗\n\n'+
+    'Te comparto la *hoja de entrega* y las *fotos* del resultado. Esperamos que te encante; si notas algún detalle que quieras revisar, con gusto lo atendemos.\n\n'+
+    '¡Gracias por confiar en VAM Garage! 🙌';
   function $(id){return document.getElementById(id)}
   function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('on')},2600)}
   function phone(t){var n=String(t||'').replace(/\D/g,'');if(n.length===10)n='52'+n;return n;}
@@ -367,7 +368,7 @@
     } else {
       return '<div class="dhead"><b>HOJA DE ENTREGA</b><span>VAM GARAGE</span></div><div class="dbody">'+
         '<div class="row"><span>Fecha y hora</span><b>'+fecha()+'</b></div>'+
-        row('Cliente',$('e-nombre').value)+row('Teléfono',$('e-tel').value)+
+        row('Cliente',$('e-nombre').value)+
         row('Vehículo',$('e-veh').value)+row('Color',$('e-color').value)+
         row('Servicio realizado',$('e-servicio').value)+
         ($('e-obs').value?'<div class="sec">Resultado / trabajos</div><div class="note">'+esc($('e-obs').value)+'</div>':'')+
@@ -391,6 +392,7 @@
         var files=[new File([blob],(side==='rec'?'Hoja-Recepcion':'Hoja-Entrega')+'.png',{type:'image/png'})];
         var data={files:files,title:'VAM Garage'};
         if(side==='rec') data.text=MSG_RECEPCION;
+        if(side==='ent') data.text=MSG_ENTREGA;
         if(navigator.canShare && navigator.canShare({files:files})){
           navigator.share(data).catch(function(){});
         }else{
@@ -426,28 +428,10 @@
   }
 
 
-  // ===== Garantía / cierre en entrega =====
+  // Aviso de cerámico en Entrega → recuerda generar el certificado en la pestaña Garantía
   function toggleGarantia(){
     var cer = $('e-servicio').value.toLowerCase().indexOf('ceramico')>=0;
     $('garantia-ceramico').style.display = cer?'block':'none';
-    $('btn-garantia').textContent = cer? '🛡️ Enviar garantía de cerámico (WhatsApp)' : '💬 Enviar cierre / satisfacción (WhatsApp)';
-  }
-  function enviarGarantia(){
-    var tel=$('e-tel').value; if(!tel){toast('Falta el teléfono del cliente');return;}
-    var nom=$('e-nombre').value, veh=$('e-veh').value;
-    var cer=$('e-servicio').value.toLowerCase().indexOf('ceramico')>=0;
-    var m;
-    if(cer){
-      m='Hola'+(nom?' '+nom:'')+' 👋 ¡Tu vehículo'+(veh?' ('+veh+')':'')+' quedó listo! ✨🚗\n\n';
-      m+='Aplicamos tu *recubrimiento cerámico* y te compartimos la *garantía* junto con los cuidados para mantener el acabado el mayor tiempo posible. 🛡️\n\n';
-      if(GARANTIA_CERAMICO_URL) m+='📄 Garantía y cuidados: '+GARANTIA_CERAMICO_URL+'\n\n';
-      m+='Cualquier duda sobre el mantenimiento, aquí estamos. ¡Gracias por tu confianza! 🙌';
-    } else {
-      m='Hola'+(nom?' '+nom:'')+' 👋 ¡Tu vehículo'+(veh?' ('+veh+')':'')+' está listo! ✨🚗\n\n';
-      m+='Esperamos que te haya encantado el resultado. ¿Hubo *algún detalle* que te gustaría revisar o que no haya quedado a tu gusto? Con gusto lo atendemos.\n\n';
-      m+='¡Gracias por confiar en VAM Garage! 🙌';
-    }
-    window.open(wa(tel,m),'_blank');
   }
 
   // ===== GARANTÍA: certificado de cerámico =====
