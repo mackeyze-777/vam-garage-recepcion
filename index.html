@@ -102,10 +102,11 @@
   .certm .sub{letter-spacing:4px;font-size:9.5px;color:#9a948a;margin-top:8px;text-transform:uppercase}
   .certm .rule{width:54px;height:2px;background:#ec1f86;margin:20px auto 18px;border-radius:2px}
   .certm .lead{font-size:12px;color:#6c675e;max-width:380px;margin:0 auto;line-height:1.6}
-  .certm .data{max-width:400px;margin:28px auto 6px;text-align:left}
-  .certm .drow{display:flex;justify-content:space-between;gap:14px;padding:11px 2px;border-bottom:1px solid rgba(0,0,0,.08);font-size:13px}
-  .certm .drow span{color:#9a948a;letter-spacing:.4px;white-space:nowrap}
-  .certm .drow b{font-weight:800;text-align:right}
+  .certm .data{display:grid;grid-template-columns:1fr 1fr;gap:16px 28px;max-width:440px;margin:30px auto 8px;text-align:left}
+  .certm .cell{border-bottom:1px solid rgba(0,0,0,.09);padding-bottom:9px}
+  .certm .cell.full{grid-column:1 / -1}
+  .certm .cell span{display:block;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#9a948a;margin-bottom:4px}
+  .certm .cell b{font-size:14px;font-weight:800;color:#2c2a26}
   .certm h4{margin:22px 0 5px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#ec1f86;font-weight:800}
   .certm .legal{text-align:left;max-width:400px;margin:0 auto}
   .certm p,.certm li{font-size:11px;line-height:1.65;color:#55514a;margin:3px 0}
@@ -291,6 +292,11 @@
     'Te comparto la *hoja de recepción* y las *fotografías* de tu vehículo al momento de ingresar al taller. 🚗\n\n'+
     'Por favor revísalas y, si notas algún dato incorrecto o tienes alguna duda, házmelo saber antes de comenzar el servicio.\n\n'+
     '¡Muchas gracias por la confianza! ✨';
+  var DOC_KIND='';  // 'hoja' | 'cert' — para saber qué mensaje mandar al compartir
+  var MSG_GARANTIA='Hola 👋 ¡Gracias por confiar en *VAM Garage*! 🛡️✨\n\n'+
+    'Te comparto tu *Certificado de Garantía* del recubrimiento cerámico aplicado a tu vehículo.\n\n'+
+    '📌 Recuerda dar mantenimiento cada 3 a 4 meses para conservar la protección, y guárdalo para cualquier revisión.\n\n'+
+    '¡Cualquier duda, aquí estamos! 🙌';
   var GARANTIA_HORAS=48;  // garantía de satisfacción (cámbialo a 24 si lo prefieres)
   var MSG_ENTREGA='Hola 👋 ¡Tu vehículo ya está listo! ✨🚗\n\n'+
     'Te comparto la *hoja de entrega* y las *fotos* del resultado.\n\n'+
@@ -386,6 +392,7 @@
     }
   }
   function generar(side){
+    DOC_KIND='hoja';
     $('doc').innerHTML=buildDocHTML(side);
     $('scrim').classList.add('on');$('modal').classList.add('on');window.scrollTo(0,0);
   }
@@ -424,9 +431,11 @@
       html2canvas($('doc'),{scale:2,backgroundColor:'#ffffff',useCORS:true}).then(function(canvas){
         canvas.toBlob(function(blob){
           if(!blob){toast('No se pudo generar la imagen');return;}
-          var file=new File([blob],'VAM-Garage.png',{type:'image/png'});
+          var file=new File([blob],(DOC_KIND==='cert'?'Certificado-Garantia':'VAM-Garage')+'.png',{type:'image/png'});
+          var data={files:[file],title:'VAM Garage'};
+          if(DOC_KIND==='cert') data.text=MSG_GARANTIA;
           if(navigator.canShare && navigator.canShare({files:[file]})){
-            navigator.share({files:[file],title:'VAM Garage'}).catch(function(){});
+            navigator.share(data).catch(function(){});
           }else{
             var a=document.createElement('a');
             a.href=URL.createObjectURL(blob);a.download='VAM-Garage.png';a.click();
@@ -479,12 +488,12 @@
       '<div class="rule"></div>'+
       '<div class="lead">Garantía del servicio de recubrimiento cerámico aplicado al siguiente vehículo.</div>'+
       '<div class="data">'+
-        '<div class="drow"><span>Vehículo</span><b>'+esc($('g-veh').value||'—')+'</b></div>'+
-        '<div class="drow"><span>Placas</span><b>'+esc(placas||'—')+'</b></div>'+
-        '<div class="drow"><span>Folio</span><b>'+esc($('g-folio').value||'—')+'</b></div>'+
-        '<div class="drow"><span>Fecha de instalación</span><b>'+inst+'</b></div>'+
-        '<div class="drow"><span>Producto aplicado</span><b>'+esc(prods.join(', '))+'</b></div>'+
-        '<div class="drow"><span>Duración de la protección</span><b>'+dur+'</b></div>'+
+        '<div class="cell"><span>Vehículo</span><b>'+esc($('g-veh').value||'—')+'</b></div>'+
+        '<div class="cell"><span>Placas</span><b>'+esc(placas||'—')+'</b></div>'+
+        '<div class="cell"><span>Folio</span><b>'+esc($('g-folio').value||'—')+'</b></div>'+
+        '<div class="cell"><span>Fecha de instalación</span><b>'+inst+'</b></div>'+
+        '<div class="cell full"><span>Producto aplicado</span><b>'+esc(prods.join(', '))+'</b></div>'+
+        '<div class="cell full"><span>Duración de la protección</span><b>'+dur+'</b></div>'+
       '</div>'+
       '<div class="legal">'+
         '<h4>Cobertura</h4><ul>'+
@@ -500,6 +509,7 @@
       '</div>'+
       '<div class="foot"><img src="logo.png" alt="VAM Garage">DLT Studio &amp; VAM Garage · Pachuca, Hidalgo<br>Emitido el '+emis+'</div>'+
     '</div>';
+    DOC_KIND='cert';
     $('doc').innerHTML=html;
     $('scrim').classList.add('on');$('modal').classList.add('on');window.scrollTo(0,0);
     // subir folio para el siguiente
