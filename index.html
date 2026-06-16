@@ -127,7 +127,6 @@
   <section class="page on" id="page-rec">
     <h2>Datos del cliente</h2>
     <label>Nombre del cliente</label><input id="r-nombre" placeholder="Juan García">
-    <label>Teléfono (WhatsApp)</label><input id="r-tel" type="tel" inputmode="tel" placeholder="771 802 1389">
 
     <h2>Vehículo</h2>
     <div class="two">
@@ -285,9 +284,8 @@
 
   var PHOTOS={rec:[],ent:[]};
   var MSG_RECEPCION='Hola, qué tal. 👋\n\n'+
-    'Te comparto la hoja de recepción junto con las fotografías que tomamos al momento de recibir tu vehículo. 🚗\n\n'+
-    'Toda esta información forma parte de nuestro proceso de recepción y nos permite dejar documentado el estado en el que ingresó la unidad, así como los servicios acordados antes de comenzar el trabajo. Esto nos ayuda a brindar mayor transparencia y seguridad durante todo el proceso.\n\n'+
-    'Te pido que, si tienes alguna duda o notas algún dato que debamos corregir, me lo hagas saber antes de iniciar el servicio.\n\n'+
+    'Te comparto la *hoja de recepción* y las *fotografías* de tu vehículo al momento de ingresar al taller. 🚗\n\n'+
+    'Por favor revísalas y, si notas algún dato incorrecto o tienes alguna duda, házmelo saber antes de comenzar el servicio.\n\n'+
     '¡Muchas gracias por la confianza! ✨';
   function $(id){return document.getElementById(id)}
   function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('on')},2600)}
@@ -357,7 +355,7 @@
       var danos=danosVals().join(', ');
       return '<div class="dhead"><b>HOJA DE RECEPCIÓN</b><span>VAM GARAGE</span></div><div class="dbody">'+
         '<div class="row"><span>Fecha y hora</span><b>'+fecha()+'</b></div>'+
-        row('Cliente',$('r-nombre').value)+row('Teléfono',$('r-tel').value)+
+        row('Cliente',$('r-nombre').value)+
         row('Vehículo',$('r-veh').value)+row('Color',$('r-color').value)+
         row('Placas',$('r-placas').value)+row('Kilometraje',$('r-km').value)+
         row('Servicio',$('r-servicio').value)+row('Servicios extra',$('r-extra').value)+
@@ -427,20 +425,6 @@
     }).catch(function(){toast('Error al generar la imagen')});
   }
 
-  // ===== Mensaje de recibimiento (al recibir el carro) =====
-  function msgRecibimiento(){
-    var tel=$('r-tel').value; if(!tel){toast('Falta el teléfono del cliente');return;}
-    var nom=$('r-nombre').value, veh=$('r-veh').value;
-    var m='Hola'+(nom?' '+nom:'')+', ¡qué tal! 👋\n\n';
-    m+='Te confirmo que ya recibimos tu vehículo'+(veh?' ('+veh+')':'')+' en *VAM Garage* y en un momento comenzamos con el servicio acordado. 🚗✨\n\n';
-    m+='Durante el proceso te mantendremos al tanto de cualquier detalle. ¡Gracias por tu confianza! 🙌';
-    window.open(wa(tel,m),'_blank');
-  }
-  // Mensaje de recepción (se manda DESPUÉS de la hoja y las fotos)
-  function msgRecepcion(){
-    var tel=$('r-tel').value; if(!tel){toast('Falta el teléfono del cliente');return;}
-    window.open(wa(tel,MSG_RECEPCION),'_blank');
-  }
 
   // ===== Garantía / cierre en entrega =====
   function toggleGarantia(){
