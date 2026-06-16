@@ -88,24 +88,30 @@
   .gitem .gck{flex:1;display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;color:var(--txt);cursor:pointer;margin:0}
   .gitem .gck input{width:20px;height:20px;accent-color:var(--accent)}
   .gitem select{width:auto;min-width:96px;padding:9px 10px;font-size:14px}
-  /* certificado */
-  .cert{font-family:Georgia,"Times New Roman",serif;color:#1a1a1a;background:#fff}
-  .cert .bar{background:#111;height:42px}
-  .cert .ct{text-align:center;padding:20px 18px 4px}
-  .cert .ct h1{font-size:23px;letter-spacing:5px;margin:0;font-weight:600}
-  .cert .ct .sub{letter-spacing:3px;font-size:11px;color:#555;margin-top:5px}
-  .cert hr{border:0;border-top:1px solid #ccc;margin:12px 22px}
-  .cert .body{padding:4px 24px 14px;font-size:12.5px;line-height:1.5}
-  .cert .emis{text-align:right;font-size:12px;color:#333;margin-bottom:4px}
-  .cert .org{font-weight:700;margin:4px 0 10px;font-size:14px}
-  .cert .cols{display:flex;gap:16px;margin:10px 0}
-  .cert .cols>div{flex:1}
-  .cert h4{margin:13px 0 3px;font-size:13px}
-  .cert ul{margin:3px 0;padding-left:18px}
-  .cert ul li{margin:2px 0}
-  .cert .footbar{background:#111;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:11px 22px}
-  .cert .footbar img{height:24px}
-  .cert .footbar span{font-size:12px}
+  /* ===== Tipografía Garet ===== */
+  @font-face{font-family:'Garet';src:url('fonts/Garet-Book.woff2') format('woff2'),url('fonts/Garet-Book.woff') format('woff');font-weight:400;font-display:swap}
+  @font-face{font-family:'Garet';src:url('fonts/Garet-Heavy.woff2') format('woff2'),url('fonts/Garet-Heavy.woff') format('woff');font-weight:800;font-display:swap}
+  /* ===== Certificado · minimalista elegante (crema-gris + textura leve) ===== */
+  .certm{font-family:'Garet',-apple-system,sans-serif;color:#2c2a26;
+    background-color:#ece9e1;
+    background-image:radial-gradient(rgba(120,110,90,0.07) 0.5px, transparent 0.6px);
+    background-size:7px 7px;
+    padding:46px 38px 38px;text-align:center}
+  .certm .brandline{letter-spacing:7px;font-size:12px;font-weight:800;color:#6c675e;margin-bottom:26px}
+  .certm h1{font-size:30px;font-weight:800;letter-spacing:.5px;margin:0;line-height:1.15}
+  .certm .sub{letter-spacing:4px;font-size:9.5px;color:#9a948a;margin-top:8px;text-transform:uppercase}
+  .certm .rule{width:54px;height:2px;background:#ec1f86;margin:20px auto 18px;border-radius:2px}
+  .certm .lead{font-size:12px;color:#6c675e;max-width:380px;margin:0 auto;line-height:1.6}
+  .certm .data{max-width:400px;margin:28px auto 6px;text-align:left}
+  .certm .drow{display:flex;justify-content:space-between;gap:14px;padding:11px 2px;border-bottom:1px solid rgba(0,0,0,.08);font-size:13px}
+  .certm .drow span{color:#9a948a;letter-spacing:.4px;white-space:nowrap}
+  .certm .drow b{font-weight:800;text-align:right}
+  .certm h4{margin:22px 0 5px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#ec1f86;font-weight:800}
+  .certm .legal{text-align:left;max-width:400px;margin:0 auto}
+  .certm p,.certm li{font-size:11px;line-height:1.65;color:#55514a;margin:3px 0}
+  .certm ul{padding-left:15px;margin:3px 0}
+  .certm .foot{margin-top:30px;font-size:10px;color:#9a948a;letter-spacing:.5px}
+  .certm .foot img{height:26px;display:block;margin:0 auto 8px;opacity:.9}
   .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#fff;color:#111;
     padding:12px 18px;border-radius:11px;font-weight:600;font-size:14px;z-index:60;opacity:0;
     transition:opacity .25s;box-shadow:0 8px 24px rgba(0,0,0,.4);pointer-events:none;max-width:90%}
@@ -414,20 +420,22 @@
   function compartirDoc(){
     if(typeof html2canvas==='undefined'){toast('Cargando… intenta de nuevo en 2 seg');return;}
     toast('Preparando imagen…');
-    html2canvas($('doc'),{scale:2,backgroundColor:'#ffffff',useCORS:true}).then(function(canvas){
-      canvas.toBlob(function(blob){
-        if(!blob){toast('No se pudo generar la imagen');return;}
-        var file=new File([blob],'VAM-Garage.png',{type:'image/png'});
-        if(navigator.canShare && navigator.canShare({files:[file]})){
-          navigator.share({files:[file],title:'VAM Garage'}).catch(function(){});
-        }else{
-          // Fallback: descargar la imagen para adjuntarla a mano
-          var a=document.createElement('a');
-          a.href=URL.createObjectURL(blob);a.download='VAM-Garage.png';a.click();
-          toast('Imagen guardada — adjúntala en WhatsApp');
-        }
-      },'image/png');
-    }).catch(function(){toast('Error al generar la imagen')});
+    var run=function(){
+      html2canvas($('doc'),{scale:2,backgroundColor:'#ffffff',useCORS:true}).then(function(canvas){
+        canvas.toBlob(function(blob){
+          if(!blob){toast('No se pudo generar la imagen');return;}
+          var file=new File([blob],'VAM-Garage.png',{type:'image/png'});
+          if(navigator.canShare && navigator.canShare({files:[file]})){
+            navigator.share({files:[file],title:'VAM Garage'}).catch(function(){});
+          }else{
+            var a=document.createElement('a');
+            a.href=URL.createObjectURL(blob);a.download='VAM-Garage.png';a.click();
+            toast('Imagen guardada — adjúntala en WhatsApp');
+          }
+        },'image/png');
+      }).catch(function(){toast('Error al generar la imagen')});
+    };
+    if(document.fonts && document.fonts.ready){document.fonts.ready.then(run);}else{run();}
   }
 
 
@@ -443,6 +451,8 @@
     if(!$('g-fecha').value) $('g-fecha').value=hoy;
     var next=localStorage.getItem('vam_next_folio');
     if(next && !$('g-folio').value) $('g-folio').value=next;
+    // precargar la fuente Garet para que el certificado salga bien al compartir
+    if(document.fonts && document.fonts.load){document.fonts.load('400 16px Garet');document.fonts.load('800 16px Garet');}
   }
   function yTxt(y){return y==1?'1 año':y+' años';}
   function fechaDMY(iso){if(!iso)return '';var p=iso.split('-');return (+p[2])+'/'+(+p[1])+'/'+p[0];}
@@ -462,41 +472,33 @@
     var dur=yTxt($('g-dur').value);
     var placas=$('g-placas').value.trim();
     var html=
-    '<div class="cert">'+
-      '<div class="bar"></div>'+
-      '<div class="ct"><h1>CERTIFICADO DE GARANTÍA</h1><div class="sub">CERAMIC COATING PROTECTION</div></div>'+
-      '<hr>'+
-      '<div class="body">'+
-        '<div class="emis">Fecha de emisión: '+emis+'</div>'+
-        '<div class="org">DLT Studio &amp; VAM Garage</div>'+
-        'Certificado de garantía del servicio de recubrimiento cerámico aplicado al siguiente vehículo:'+
-        '<div class="cols">'+
-          '<div>'+
-            '<b>Vehículo:</b> '+esc($('g-veh').value)+'<br>'+
-            '<b>Folio:</b> '+esc($('g-folio').value)+'<br>'+
-            '<b>Fecha de instalación:</b> '+inst+
-          '</div>'+
-          '<div>'+
-            (placas?'<b>Número de placas:</b> '+esc(placas)+'<br>':'')+
-            '<b>Producto aplicado:</b> '+esc(prods.join(', '))+
-          '</div>'+
-        '</div>'+
-        '<h4>Duración de la protección:</h4>'+
-        'El recubrimiento cerámico aplicado ofrece una protección aproximada de '+dur+', dependiendo del uso del vehículo, hábitos de manejo, condiciones ambientales y mantenimiento realizado.'+
-        '<h4>Cobertura:</h4><ul>'+
+    '<div class="certm">'+
+      '<div class="brandline">V A M&nbsp;&nbsp;&nbsp;G A R A G E</div>'+
+      '<h1>Certificado de Garantía</h1>'+
+      '<div class="sub">Ceramic Coating Protection</div>'+
+      '<div class="rule"></div>'+
+      '<div class="lead">Garantía del servicio de recubrimiento cerámico aplicado al siguiente vehículo.</div>'+
+      '<div class="data">'+
+        '<div class="drow"><span>Vehículo</span><b>'+esc($('g-veh').value||'—')+'</b></div>'+
+        '<div class="drow"><span>Placas</span><b>'+esc(placas||'—')+'</b></div>'+
+        '<div class="drow"><span>Folio</span><b>'+esc($('g-folio').value||'—')+'</b></div>'+
+        '<div class="drow"><span>Fecha de instalación</span><b>'+inst+'</b></div>'+
+        '<div class="drow"><span>Producto aplicado</span><b>'+esc(prods.join(', '))+'</b></div>'+
+        '<div class="drow"><span>Duración de la protección</span><b>'+dur+'</b></div>'+
+      '</div>'+
+      '<div class="legal">'+
+        '<h4>Cobertura</h4><ul>'+
           '<li>Defectos derivados de la aplicación del producto.</li>'+
           '<li>Pérdida prematura de propiedades del recubrimiento causada por fallas en la instalación.</li></ul>'+
-        '<h4>Exclusiones:</h4><ul>'+
+        '<h4>Exclusiones</h4><ul>'+
           '<li>Rayones, golpes o daños físicos.</li>'+
           '<li>Uso de químicos agresivos o procesos de lavado inadecuados.</li>'+
           '<li>Falta de mantenimiento recomendado.</li>'+
-          '<li>Contaminación ambiental severa: Sarro, Resina de árboles, Excremento de aves, Contaminantes químicos.</li></ul>'+
-        '<h4>Mantenimiento requerido:</h4>'+
-        'Para conservar las propiedades y duración del recubrimiento, se recomienda realizar mantenimientos periódicos cada 3 a 4 meses en DLT Studio.<br><br>'+
-        'En caso de cualquier duda, inspección o revisión, nuestro equipo podrá evaluar el estado del vehículo directamente en nuestras instalaciones.<br><br>'+
-        'Agradecemos su confianza en DLT Studio &amp; VAM Garage.'+
+          '<li>Contaminación ambiental severa: sarro, resina de árboles, excremento de aves, contaminantes químicos.</li></ul>'+
+        '<h4>Mantenimiento</h4>'+
+        '<p>Para conservar las propiedades y duración del recubrimiento, se recomienda realizar mantenimientos periódicos cada 3 a 4 meses. Ante cualquier duda, inspección o revisión, nuestro equipo evaluará el estado del vehículo en nuestras instalaciones.</p>'+
       '</div>'+
-      '<div class="footbar"><img src="logo.png" alt="VAM"><span>DLT Studio | Pachuca, Hidalgo</span></div>'+
+      '<div class="foot"><img src="logo.png" alt="VAM Garage">DLT Studio &amp; VAM Garage · Pachuca, Hidalgo<br>Emitido el '+emis+'</div>'+
     '</div>';
     $('doc').innerHTML=html;
     $('scrim').classList.add('on');$('modal').classList.add('on');window.scrollTo(0,0);
