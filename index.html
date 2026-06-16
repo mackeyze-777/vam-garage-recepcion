@@ -285,8 +285,10 @@
     'Te comparto la *hoja de recepción* y las *fotografías* de tu vehículo al momento de ingresar al taller. 🚗\n\n'+
     'Por favor revísalas y, si notas algún dato incorrecto o tienes alguna duda, házmelo saber antes de comenzar el servicio.\n\n'+
     '¡Muchas gracias por la confianza! ✨';
+  var GARANTIA_HORAS=48;  // garantía de satisfacción (cámbialo a 24 si lo prefieres)
   var MSG_ENTREGA='Hola 👋 ¡Tu vehículo ya está listo! ✨🚗\n\n'+
-    'Te comparto la *hoja de entrega* y las *fotos* del resultado. Esperamos que te encante; si notas algún detalle que quieras revisar, con gusto lo atendemos.\n\n'+
+    'Te comparto la *hoja de entrega* y las *fotos* del resultado.\n\n'+
+    '🛡️ Tu servicio cuenta con una *garantía de satisfacción de '+GARANTIA_HORAS+' horas*: si en este tiempo notas cualquier detalle que no haya quedado a tu gusto, avísanos y con gusto lo corregimos.\n\n'+
     '¡Gracias por confiar en VAM Garage! 🙌';
   function $(id){return document.getElementById(id)}
   function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('on')},2600)}
@@ -373,6 +375,7 @@
         row('Servicio realizado',$('e-servicio').value)+
         ($('e-obs').value?'<div class="sec">Resultado / trabajos</div><div class="note">'+esc($('e-obs').value)+'</div>':'')+
         photosHTML(photos)+
+        '<div class="sec">Garantía de satisfacción</div><div class="note">El servicio cuenta con garantía de satisfacción de '+GARANTIA_HORAS+' horas. Cualquier detalle reportado dentro de este periodo se corrige sin costo.</div>'+
         '</div><div class="foot">VAM Garage · 771 802 1389</div>';
     }
   }
