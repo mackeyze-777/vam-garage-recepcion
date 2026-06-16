@@ -265,6 +265,12 @@
     <button class="btn primary" onclick="generarCert()">📄 Generar certificado</button>
     <button class="btn wa" onclick="msgGarantia()">💬 Avisar por WhatsApp</button>
     <p class="hint">Genera el certificado → "Guardar / Imprimir PDF" → mándalo por WhatsApp adjuntando el PDF. El folio se sugiere solo y sube de uno en uno.</p>
+
+    <h2>Recordatorio de mantenimiento</h2>
+    <label>Avisarme para el mantenimiento en</label>
+    <select id="g-mant"><option value="3" selected>3 meses</option><option value="4">4 meses</option><option value="6">6 meses</option></select>
+    <button class="btn ghost" onclick="recordarMantenimiento()">📅 Agendar recordatorio en mi calendario</button>
+    <p class="hint">Crea un evento en tu Google Calendar para ese día, con el teléfono del cliente y un mensaje de WhatsApp ya listo. Cuando llegue la fecha, tu celular te avisa solo y solo tocas el enlace para escribirle.</p>
   </section>
 </main>
 
@@ -524,6 +530,31 @@
     m+='📌 Recuerda dar mantenimiento cada 3 a 4 meses para conservar la protección. Guarda este certificado para cualquier revisión.\n\n';
     m+='Cualquier duda, aquí estamos. 🙌';
     window.open(wa(tel,m),'_blank');
+  }
+
+  // ===== Recordatorio de mantenimiento en Google Calendar =====
+  function addMonths(iso,m){var p=(iso||new Date().toISOString().slice(0,10)).split('-');return new Date(+p[0],(+p[1]-1)+(+m),+p[2]);}
+  function ymd(d){return d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2);}
+  function recordarMantenimiento(){
+    var meses=$('g-mant').value;
+    var ini=$('g-fecha').value||new Date().toISOString().slice(0,10);
+    var d=addMonths(ini,meses);
+    var start=ymd(d), end=ymd(new Date(d.getTime()+86400000));
+    var veh=$('g-veh').value.trim(), placas=$('g-placas').value.trim(), tel=$('g-tel').value.trim();
+    var titulo='🛡️ Mantenimiento cerámico'+(veh?' – '+veh:'')+(placas?' ('+placas+')':'');
+    var msg='Hola 👋 Desde *VAM Garage* 🛡️✨\n\n'+
+      'Ya pasaron unos meses desde que aplicamos el cerámico a tu vehículo'+(veh?' ('+veh+')':'')+'. '+
+      'Te recomendamos un *mantenimiento* para conservar la protección y el brillo. ✨\n\n'+
+      '¿Te agendamos? Aquí estamos. 🙌';
+    var det='Recordarle al cliente su mantenimiento de cerámico (cada '+meses+' meses).\n'+
+      'Vehículo: '+(veh||'—')+'\nPlacas: '+(placas||'—')+'\nTeléfono: '+(tel||'—')+'\n';
+    if(tel) det+='\nEscribirle por WhatsApp:\n'+wa(tel,msg);
+    var url='https://calendar.google.com/calendar/render?action=TEMPLATE'+
+      '&text='+encodeURIComponent(titulo)+
+      '&dates='+start+'/'+end+
+      '&details='+encodeURIComponent(det);
+    window.open(url,'_blank');
+    toast('Abriendo tu calendario… guarda el evento');
   }
 
   function limpiar(side){
