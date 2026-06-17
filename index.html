@@ -429,10 +429,12 @@
         '</div><div class="foot">VAM Garage · 771 802 1389</div>';
     } else {
       return '<div class="dhead"><b>HOJA DE ENTREGA</b><span>VAM GARAGE</span></div><div class="dbody">'+
-        '<div class="row"><span>Fecha y hora</span><b>'+fecha()+'</b></div>'+
-        row('Cliente',$('e-nombre').value)+
-        row('Vehículo',$('e-veh').value)+row('Color',$('e-color').value)+
-        row('Servicio realizado',$('e-servicio').value)+
+        '<div class="grid2">'+
+          gc('Fecha y hora',fecha(),true)+
+          gc('Cliente',$('e-nombre').value,true)+
+          gc('Vehículo',$('e-veh').value)+gc('Color',$('e-color').value)+
+          gc('Servicio realizado',$('e-servicio').value,true)+
+        '</div>'+
         ($('e-obs').value?'<div class="sec">Resultado / trabajos</div><div class="note">'+esc($('e-obs').value)+'</div>':'')+
         photosHTML(photos)+
         '<div class="sec">Garantía de satisfacción</div><div class="note">El servicio cuenta con garantía de satisfacción de '+GARANTIA_HORAS+' horas. Cualquier detalle reportado dentro de este periodo se corrige sin costo.</div>'+
