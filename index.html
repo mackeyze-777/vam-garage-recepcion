@@ -75,6 +75,15 @@
   .doc .row span{color:#888} .doc .row b{color:#15171c;text-align:right}
   .doc .sec{margin-top:14px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--accent);font-weight:800}
   .doc .note{font-size:13px;color:#333;white-space:pre-wrap;margin-top:4px}
+  .doc .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+  .doc .gc{padding:8px 0;border-bottom:1px solid #eee;font-size:14px;min-width:0}
+  .doc .gc span{display:block;color:#999;font-size:10px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:2px}
+  .doc .gc b{color:#15171c;word-break:break-word}
+  .doc .gc.full{grid-column:1 / -1}
+  .doc .costbox{margin-top:14px;background:#fdf0f6;border:1px solid #f4c4dd;border-radius:10px;padding:12px 14px;text-align:center}
+  .doc .costbox span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--accent);font-weight:800}
+  .doc .costbox b{display:block;font-size:24px;color:#15171c;margin:3px 0}
+  .doc .costbox small{display:block;font-size:11px;color:#666;line-height:1.4}
   .doc .dphotos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
   .doc .dphotos img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px}
   .doc .foot{padding:12px 18px 18px;font-size:11px;color:#999;text-align:center}
@@ -152,6 +161,8 @@
     </select>
     <label>Servicios extra / agregados</label>
     <input id="r-extra" placeholder="Ej. hidratado de piel, descontaminado, grabado de cristales…">
+    <label>Costo del servicio ($)</label>
+    <input id="r-costo" inputmode="numeric" placeholder="1200">
 
     <h2>Nivel de gasolina</h2>
     <div class="fuel" id="r-fuel">
@@ -176,7 +187,8 @@
     <label>Detalle de daños / observaciones</label>
     <textarea id="r-obs" placeholder="Ej. rayón en puerta trasera derecha, tapón de gasolina suelto…"></textarea>
     <label>Objetos de valor / pertenencias dejadas</label>
-    <input id="r-objetos" placeholder="Ninguno / Cargador, monedas, etc.">
+    <div class="gitem"><label class="gck"><input type="checkbox" id="r-sinobj" onchange="toggleObj()"> No hay objetos de valor</label></div>
+    <input id="r-objetos" placeholder="Cargador, monedas, etc.">
 
     <h2>Fotos de recepción</h2>
     <div class="photos" id="r-photos">
@@ -369,21 +381,28 @@
   // ===== Generar hoja =====
   function fecha(){var d=new Date();return d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear()+' '+d.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});}
   function row(l,v){if(!v)return '';return '<div class="row"><span>'+esc(l)+'</span><b>'+esc(v)+'</b></div>';}
+  function gc(l,v,full){if(!v)return '';return '<div class="gc'+(full?' full':'')+'"><span>'+esc(l)+'</span><b>'+esc(v)+'</b></div>';}
+  function toggleObj(){var on=$('r-sinobj').checked;$('r-objetos').value=on?'Ninguno':'';$('r-objetos').disabled=on;}
 
   function buildDocHTML(side){
     var photos=PHOTOS[side];
     if(side==='rec'){
       var danos=danosVals().join(', ');
+      var costo=$('r-costo').value;
       return '<div class="dhead"><b>HOJA DE RECEPCIÓN</b><span>VAM GARAGE</span></div><div class="dbody">'+
-        '<div class="row"><span>Fecha y hora</span><b>'+fecha()+'</b></div>'+
-        row('Cliente',$('r-nombre').value)+
-        row('Vehículo',$('r-veh').value)+row('Color',$('r-color').value)+
-        row('Placas',$('r-placas').value)+row('Kilometraje',$('r-km').value)+
-        row('Servicio',$('r-servicio').value)+row('Servicios extra',$('r-extra').value)+
-        row('Gasolina',fuelVal())+row('Objetos/pertenencias',$('r-objetos').value)+
+        '<div class="grid2">'+
+          gc('Fecha y hora',fecha(),true)+
+          gc('Cliente',$('r-nombre').value,true)+
+          gc('Vehículo',$('r-veh').value)+gc('Color',$('r-color').value)+
+          gc('Placas',$('r-placas').value)+gc('Kilometraje',$('r-km').value)+
+          gc('Servicio',$('r-servicio').value)+gc('Gasolina',fuelVal())+
+          gc('Servicios extra',$('r-extra').value,true)+
+          gc('Objetos / pertenencias',$('r-objetos').value,true)+
+        '</div>'+
         (danos?'<div class="sec">Estado / daños detectados</div><div class="note">'+esc(danos)+'</div>':'')+
         ($('r-obs').value?'<div class="sec">Observaciones</div><div class="note">'+esc($('r-obs').value)+'</div>':'')+
         photosHTML(photos)+
+        (costo?'<div class="costbox"><span>Costo del servicio</span><b>$'+esc(costo)+'</b><small>El cliente revisó y acepta el costo del servicio y el estado del vehículo aquí descrito.</small></div>':'')+
         '</div><div class="foot">VAM Garage · 771 802 1389</div>';
     } else {
       return '<div class="dhead"><b>HOJA DE ENTREGA</b><span>VAM GARAGE</span></div><div class="dbody">'+
@@ -561,7 +580,8 @@
     var pref=side==='rec'?'r-':'e-';
     document.querySelectorAll('#page-'+side+' input, #page-'+side+' textarea').forEach(function(i){i.value=''});
     if(side==='rec'){document.querySelectorAll('#r-danos .chip').forEach(function(c){c.classList.remove('on')});
-      document.querySelectorAll('#r-fuel .f').forEach(function(x,i){x.classList.toggle('on',i===2)});}
+      document.querySelectorAll('#r-fuel .f').forEach(function(x,i){x.classList.toggle('on',i===2)});
+      $('r-sinobj').checked=false;$('r-objetos').disabled=false;}
     PHOTOS[side]=[];renderPhotos(side);
     toast('Formulario limpio');
   }
