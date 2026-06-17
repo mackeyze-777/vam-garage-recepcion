@@ -154,10 +154,21 @@
       <div><label>Kilometraje</label><input id="r-km" inputmode="numeric" placeholder="00000"></div>
     </div>
     <label>Servicio contratado</label>
-    <select id="r-servicio">
-      <option>Interiores Basico</option><option>Interior + Pulido</option>
-      <option>Pulido + Encerado</option><option>Pulido 2 pasos</option>
-      <option>Pulido + Ceramico</option><option>Otro</option>
+    <select id="r-servicio" onchange="onServRec()">
+      <option>Interior Básico</option>
+      <option>Interior Premium</option>
+      <option>Pulido y Encerado</option>
+      <option>Corrección de pintura + Encerado</option>
+      <option>Pulido 1 paso + Cerámico</option>
+      <option>Corrección de pintura + Cerámico</option>
+      <option>Otro</option>
+    </select>
+    <input type="text" id="r-servicio-otro" placeholder="Escribe el servicio" style="display:none;margin-top:10px">
+    <select id="r-servicio-anios" style="display:none;margin-top:10px">
+      <option value="1">Cerámico de 1 año</option>
+      <option value="2">Cerámico de 2 años</option>
+      <option value="3" selected>Cerámico de 3 años</option>
+      <option value="5">Cerámico de 5 años</option>
     </select>
     <label>Servicios extra / agregados</label>
     <input id="r-extra" placeholder="Ej. hidratado de piel, descontaminado, grabado de cristales…">
@@ -383,6 +394,18 @@
   function row(l,v){if(!v)return '';return '<div class="row"><span>'+esc(l)+'</span><b>'+esc(v)+'</b></div>';}
   function gc(l,v,full){if(!v)return '';return '<div class="gc'+(full?' full':'')+'"><span>'+esc(l)+'</span><b>'+esc(v)+'</b></div>';}
   function toggleObj(){var on=$('r-sinobj').checked;$('r-objetos').value=on?'Ninguno':'';$('r-objetos').disabled=on;}
+  // Servicio de recepción: campo libre en "Otro" y años cuando hay cerámico
+  function onServRec(){
+    var v=$('r-servicio').value;
+    $('r-servicio-otro').style.display=(v==='Otro')?'block':'none';
+    $('r-servicio-anios').style.display=(v.toLowerCase().indexOf('cerámico')>=0)?'block':'none';
+  }
+  function servRec(){
+    var v=$('r-servicio').value;
+    if(v==='Otro'){var o=$('r-servicio-otro').value.trim();return o||'Otro';}
+    if(v.toLowerCase().indexOf('cerámico')>=0){return v+' ('+$('r-servicio-anios').value+' años)';}
+    return v;
+  }
 
   function buildDocHTML(side){
     var photos=PHOTOS[side];
@@ -395,7 +418,7 @@
           gc('Cliente',$('r-nombre').value,true)+
           gc('Vehículo',$('r-veh').value)+gc('Color',$('r-color').value)+
           gc('Placas',$('r-placas').value)+gc('Kilometraje',$('r-km').value)+
-          gc('Servicio',$('r-servicio').value)+gc('Gasolina',fuelVal())+
+          gc('Servicio',servRec())+gc('Gasolina',fuelVal())+
           gc('Servicios extra',$('r-extra').value,true)+
           gc('Objetos / pertenencias',$('r-objetos').value,true)+
         '</div>'+
@@ -581,12 +604,14 @@
     document.querySelectorAll('#page-'+side+' input, #page-'+side+' textarea').forEach(function(i){i.value=''});
     if(side==='rec'){document.querySelectorAll('#r-danos .chip').forEach(function(c){c.classList.remove('on')});
       document.querySelectorAll('#r-fuel .f').forEach(function(x,i){x.classList.toggle('on',i===2)});
-      $('r-sinobj').checked=false;$('r-objetos').disabled=false;}
+      $('r-sinobj').checked=false;$('r-objetos').disabled=false;
+      $('r-servicio').selectedIndex=0;$('r-servicio-otro').value='';onServRec();}
     PHOTOS[side]=[];renderPhotos(side);
     toast('Formulario limpio');
   }
 
   initGarantia();
+  onServRec();
 </script>
 </body>
 </html>
