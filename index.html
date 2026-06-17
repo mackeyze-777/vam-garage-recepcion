@@ -282,9 +282,6 @@
       <select id="g-cristales-y"><option value="1">1 año</option><option value="2">2 años</option><option value="3">3 años</option><option value="5">5 años</option></select>
     </div>
 
-    <label>Duración de la protección (texto principal)</label>
-    <select id="g-dur"><option value="1">hasta 1 año</option><option value="2">hasta 2 años</option><option value="3" selected>hasta 3 años</option><option value="5">hasta 5 años</option></select>
-
     <button class="btn primary" onclick="generarCert()">📄 Generar certificado</button>
     <button class="btn wa" onclick="msgGarantia()">💬 Avisar por WhatsApp</button>
     <p class="hint">Genera el certificado → "Guardar / Imprimir PDF" → mándalo por WhatsApp adjuntando el PDF. El folio se sugiere solo y sube de uno en uno.</p>
@@ -528,7 +525,6 @@
     if(!prods.length){toast('Marca al menos un cerámico aplicado');return;}
     var emis=fechaDMY(new Date().toISOString().slice(0,10));
     var inst=fechaDMY($('g-fecha').value);
-    var dur=yTxt($('g-dur').value);
     var placas=$('g-placas').value.trim();
     var html=
     '<div class="certm">'+
@@ -543,7 +539,6 @@
         '<div class="cell"><span>Folio</span><b>'+esc($('g-folio').value||'—')+'</b></div>'+
         '<div class="cell"><span>Fecha de instalación</span><b>'+inst+'</b></div>'+
         '<div class="cell full"><span>Producto aplicado</span><b>'+esc(prods.join(', '))+'</b></div>'+
-        '<div class="cell full"><span>Duración de la protección</span><b>'+dur+'</b></div>'+
       '</div>'+
       '<div class="legal">'+
         '<h4>Cobertura</h4><ul>'+
