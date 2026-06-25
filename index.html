@@ -6,22 +6,22 @@
 <title>VAM Garage · Recepción y Entrega</title>
 <link rel="icon" href="logo.png">
 <link rel="apple-touch-icon" href="icon.png">
-<meta name="theme-color" content="#0e0f12">
+<meta name="theme-color" content="#050505">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="VAM Recepción">
 <style>
   :root{
-    --bg:#0e0f12; --panel:#16181d; --panel2:#1d2026; --line:#2a2e37;
-    --txt:#f2f4f7; --muted:#9aa3b2; --accent:#ec1f86; --accent2:#ff63ab;
-    --ok:#27c093; --warn:#ffce4f; --bad:#ff5a5f; --wa:#25d366;
+    --bg:#050505; --panel:#0c0c0c; --panel2:#131313; --line:#1e1e1e;
+    --txt:#f0f0f0; --muted:#808490; --accent:#e8178a; --accent2:#ff4fae;
+    --ok:#27c76f; --warn:#f0a500; --bad:#e04040; --wa:#25d366;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;background:var(--bg);color:var(--txt);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
   body{padding:0 0 40px}
-  header{position:sticky;top:0;z-index:10;background:rgba(14,15,18,.92);
-    backdrop-filter:blur(10px);border-bottom:1px solid var(--line);
+  header{position:sticky;top:0;z-index:10;background:rgba(5,5,5,.9);
+    backdrop-filter:blur(12px);border-top:3px solid var(--accent);border-bottom:1px solid var(--line);
     padding:14px 18px calc(10px + env(safe-area-inset-top))}
   .brand{display:flex;flex-direction:column;align-items:flex-start;gap:3px}
   .brand .logo{height:32px;width:auto}
@@ -109,7 +109,7 @@
   .certm .brandline{letter-spacing:7px;font-size:12px;font-weight:800;color:#6c675e;margin-bottom:26px}
   .certm h1{font-size:30px;font-weight:800;letter-spacing:.5px;margin:0;line-height:1.15}
   .certm .sub{letter-spacing:4px;font-size:9.5px;color:#9a948a;margin-top:8px;text-transform:uppercase}
-  .certm .rule{width:54px;height:2px;background:#ec1f86;margin:20px auto 18px;border-radius:2px}
+  .certm .rule{width:54px;height:2px;background:#e8178a;margin:20px auto 18px;border-radius:2px}
   .certm .lead{font-size:12px;color:#6c675e;max-width:380px;margin:0 auto;line-height:1.6}
   .certm .data{display:grid;grid-template-columns:1fr 1fr;gap:10px 28px;max-width:440px;margin:22px auto 6px;text-align:left}
   .certm .cell{border-bottom:1px solid rgba(0,0,0,.09);padding-bottom:6px}
@@ -117,7 +117,7 @@
   .certm .cell span{display:block;font-size:8px;letter-spacing:1.3px;text-transform:uppercase;color:#9a948a;margin-bottom:3px}
   .certm .cell b{font-size:11.5px;font-weight:800;color:#2c2a26}
   .certm .cell.full b{font-size:15px}
-  .certm h4{margin:22px 0 5px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#ec1f86;font-weight:800}
+  .certm h4{margin:22px 0 5px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#e8178a;font-weight:800}
   .certm .legal{text-align:left;max-width:400px;margin:0 auto}
   .certm p,.certm li{font-size:11px;line-height:1.65;color:#55514a;margin:3px 0}
   .certm ul{padding-left:15px;margin:3px 0}
